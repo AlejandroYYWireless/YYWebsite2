@@ -47,7 +47,7 @@ const QuickNav: React.FC = () => {
         window.requestAnimationFrame(() => {
           const scrollY = window.scrollY;
           // Use the stored position rather than recalculating on every scroll
-          setIsFixed(scrollY > navPosition - 20); // 50px offset from top
+          setIsFixed(scrollY > navPosition - 50); // 50px offset from top
           ticking = false;
         });
         ticking = true;
