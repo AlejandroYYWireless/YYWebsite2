@@ -18,7 +18,7 @@ const MobileNavCurtain = () => {
       }}
     >
       <motion.div
-        className="px-4 flex flex-col justify-between h-[calc(100vh-70px)]"
+        className="px-4 pb-4 flex flex-col justify-between h-[calc(100vh-70px)]"
         initial={{ opacity: 0 }}
         animate={navOpen ? { opacity: 1 } : { opacity: 0 }}
         transition={{
