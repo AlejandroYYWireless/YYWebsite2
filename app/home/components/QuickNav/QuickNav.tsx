@@ -27,12 +27,7 @@ const QuickNav: React.FC = () => {
   });
   const [navPosition, setNavPosition] = useState<number>(0);
 
-  const tabs: string[] = [
-    "Templates",
-    "Design Intelligence",
-    "Creative Tools",
-    "SEO & Analytics",
-  ];
+  const tabs: string[] = ["Video", "Certificates"];
 
   const [isMobile, setIsMobile] = useState(false);
 

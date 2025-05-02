@@ -58,7 +58,10 @@ const DesktopNavbar = () => {
       >
         {/* Rest of code up for grabs */}
         <div className="flex justify-between items-center text-sm px-8">
-          <Link href={"/"} className="flex items-center gap-2 cursor-pointer">
+          <Link
+            href={"/"}
+            className="flex items-center gap-2 cursor-pointer bg-black/50 pr-2"
+          >
             <Image
               src={"/images/internal/YYWirelessSmallDark.svg"}
               alt="YYWireless Company Logo, an image of a circle with two Y's in it."
