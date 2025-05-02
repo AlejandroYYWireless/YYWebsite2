@@ -1,15 +1,35 @@
+"use client";
+
 import { motion, MotionConfig } from "framer-motion";
+import { useState } from "react";
 import { useMobileNavStore } from "./useMobileNavStore";
 
 const MobileNavToggle = () => {
   const navOpen = useMobileNavStore((state) => state.navOpen);
   const setNavOpen = useMobileNavStore((state) => state.setNavOpen);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Toggle body scroll based on nav state
+  if (navOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "auto";
+  }
+
+  // These functions will update the hover state
+  const handleMouseEnter = () => setIsHovered(true);
+  const handleMouseLeave = () => setIsHovered(false);
+
   return (
     <MotionConfig transition={{ duration: 0.3, ease: "easeIn" }}>
       <motion.button
         onClick={() => setNavOpen(!navOpen)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         className="relative w-10 h-12 cursor-pointer"
+        aria-label="Toggle mobile navigation"
         animate={navOpen ? "open" : "closed"}
+        data-hovered={isHovered} // This attribute can be used for testing
       >
         <motion.span
           style={{
