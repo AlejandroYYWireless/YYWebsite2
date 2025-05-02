@@ -267,52 +267,52 @@ const QuickNav: React.FC = () => {
                 }`}
               />
             </div>
+            <AnimatePresence>
+              {isMobile && isOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  ref={optionsRef}
+                  className="absolute mt-2 rounded-[20px]  bg-stone-950 backdrop-blur-xl p-1 z-[30] left-0 right-0 mx-auto w-fit"
+                  style={{
+                    maxWidth: navRef.current?.offsetWidth || "auto",
+                    width: navRef.current?.offsetWidth || "auto",
+                  }}
+                >
+                  {/* Background indicator for mobile options */}
+                  <div
+                    className="absolute bg-neutral-600/30 rounded-[60px] transition-all duration-300 ease-in-out z-10"
+                    style={indicatorStyle}
+                  />
+
+                  {/* Options */}
+                  <div className="flex z-20 flex-col py-1">
+                    {tabs.map((tab, index) => (
+                      <div
+                        key={index}
+                        ref={(el) => {
+                          tabRefs.current[index] = el;
+                        }}
+                        className={`relative text-sm z-10 py-3 px-6 cursor-pointer text-white ${
+                          activeTab === index ? "font-medium" : ""
+                        }`}
+                        onMouseEnter={() => handleHover(index)}
+                        onMouseLeave={handleHoverEnd}
+                        onClick={() => handleClick(index)}
+                      >
+                        {tab}
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         )}
       </div>
 
       {/* Dropdown Options for Mobile */}
-      <AnimatePresence>
-        {isMobile && isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            ref={optionsRef}
-            className="absolute mt-2 rounded-[20px] bg-stone-950/45 backdrop-blur-xl p-1 z-50 left-0 right-0 mx-auto w-fit"
-            style={{
-              maxWidth: navRef.current?.offsetWidth || "auto",
-              width: navRef.current?.offsetWidth || "auto",
-            }}
-          >
-            {/* Background indicator for mobile options */}
-            <div
-              className="absolute bg-neutral-600/30 rounded-[60px] transition-all duration-300 ease-in-out z-0"
-              style={indicatorStyle}
-            />
-
-            {/* Options */}
-            <div className="flex flex-col py-1">
-              {tabs.map((tab, index) => (
-                <div
-                  key={index}
-                  ref={(el) => {
-                    tabRefs.current[index] = el;
-                  }}
-                  className={`relative text-sm z-10 py-3 px-6 cursor-pointer text-white ${
-                    activeTab === index ? "font-medium" : ""
-                  }`}
-                  onMouseEnter={() => handleHover(index)}
-                  onMouseLeave={handleHoverEnd}
-                  onClick={() => handleClick(index)}
-                >
-                  {tab}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </>
   );
 };

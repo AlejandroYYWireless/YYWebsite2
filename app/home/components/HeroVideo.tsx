@@ -7,7 +7,7 @@ const HeroVideo = () => {
       <div className="p-3 relative bg-stone-950 rounded-3xl shadow-lg">
         <video
           id={videoId}
-          src={"/videos/herovideo.mp4"}
+          src={"/videos/samplevideo1.mp4"}
           autoPlay
           loop
           muted
