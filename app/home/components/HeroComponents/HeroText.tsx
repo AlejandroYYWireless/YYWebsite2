@@ -18,7 +18,7 @@ const HeroText = () => {
           initial={{ opacity: 0, rotateX: 30, y: 30 }}
           animate={{ opacity: 1, rotateX: 0, y: 0 }}
           transition={{ duration: 0.8, easy: "easeOut", delay: 0.2 }}
-          className="text-white text-8xl max-w-4xl"
+          className="text-white text-[5vw] text-base/25 max-w-4xl"
         >
           The leader in website design
         </motion.h1>

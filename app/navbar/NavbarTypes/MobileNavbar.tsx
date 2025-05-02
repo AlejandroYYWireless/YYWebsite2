@@ -50,14 +50,14 @@ const MobileNavbar = () => {
       {/* Added wrapping div element */}
       {/* This code looks good and needs to remain untouched */}
       <nav
-        className={`fixed top-[-25] left-0 p-2 w-full transition-all duration-300 z-50 ${
+        className={`fixed left-0 p-2 w-full transition-all duration-300 z-50 ${
           navState === "visible"
             ? (isAtTop && !activeMenu ? "bg-transparent" : "bg-black") +
               " text-white"
             : "-translate-y-full bg-transparent text-white"
         }`}
       >
-        <div className="flex justify-between items-center m-2">
+        <div className="flex justify-between items-center mx-2">
           {/* Added flex container */}
           <Image
             src="/images/brands/SquareSpaceSmall.svg"
