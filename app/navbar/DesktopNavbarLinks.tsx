@@ -1,7 +1,8 @@
 "use client";
 
 import { ChevronDown } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 // Define types for our props
 interface DesktopNavbarLinksProps {
@@ -25,6 +26,8 @@ const DesktopNavbarLinks = ({
   setShowOverlay,
 }: DesktopNavbarLinksProps) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [containerOpen, setContainerOpen] = useState(false);
+
   // Refs to store the positions of each menu item
   const menuItemsRef = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -76,6 +79,7 @@ const DesktopNavbarLinks = ({
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     setActiveMenu(menuName);
     setShowOverlay(true);
+    setContainerOpen(true);
   };
 
   // Function to handle mouse leave with grace period
@@ -85,6 +89,7 @@ const DesktopNavbarLinks = ({
     timeoutRef.current = setTimeout(() => {
       setActiveMenu(null);
       setShowOverlay(false);
+      setContainerOpen(false);
     }, 300); // 300ms grace period
   };
 
@@ -103,6 +108,98 @@ const DesktopNavbarLinks = ({
   // Ref callback function
   const setMenuItemRef = (menuKey: string) => (el: HTMLDivElement | null) => {
     menuItemsRef.current[menuKey] = el;
+  };
+
+  // Get active content
+  const activeContent = activeMenu ? menuContents[activeMenu] : null;
+
+  // Function to calculate the horizontal sweep delay (left to right)
+  const getCustomDelay = (columnIndex: number) => {
+    // Create a horizontal pattern delay - only column index matters
+    const maxColumns = 3; // We have 3 columns
+
+    // Calculate percentage across the grid horizontally (0 to 1)
+    const normalizedX = columnIndex / (maxColumns - 1);
+
+    // Add the base delay of 0.1s, then add the progressive delay
+    // Maximum additional delay of 0.3s to complete the sweep
+    return 0.1 + normalizedX * 0.3;
+  };
+
+  // Container animation that handles both the container scale and opacity
+  const containerVariants = {
+    hidden: {
+      opacity: 0,
+      scaleY: 0,
+      transformOrigin: "top",
+    },
+    visible: {
+      opacity: 1,
+      scaleY: 1,
+      transition: {
+        opacity: { duration: 0.4, ease: "easeOut" },
+        scaleY: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+        when: "beforeChildren",
+        staggerChildren: 0.03,
+      },
+    },
+    exit: {
+      opacity: 0,
+      scaleY: 0,
+      transition: {
+        opacity: { duration: 0.3, ease: "easeIn" },
+        scaleY: { duration: 0.5, ease: [0.16, 1, 0.3, 1] },
+        when: "afterChildren",
+        staggerChildren: 0.02,
+        staggerDirection: -1,
+      },
+    },
+  };
+
+  // Content animation that only handles the opacity and staggering of children
+  const contentVariants = {
+    hidden: {
+      opacity: 0,
+    },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        staggerChildren: 0.03,
+      },
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.3,
+        staggerChildren: 0.01, // Faster stagger for quicker text disappearance
+        staggerDirection: -1,
+      },
+    },
+  };
+
+  // Animation variants for individual items with custom delay function
+  const itemVariants = {
+    hidden: {
+      opacity: 0,
+      y: 10,
+    },
+    visible: (custom: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        delay: custom,
+        ease: "easeOut",
+      },
+    }),
+    exit: {
+      opacity: 0,
+      y: 5,
+      transition: {
+        duration: 0.1, // Super fast text fadeout (0.1s)
+      },
+    },
   };
 
   return (
@@ -128,58 +225,84 @@ const DesktopNavbarLinks = ({
         ))}
       </div>
 
-      {/* Dropdown Containers */}
-      {Object.entries(menuContents).map(([key, content]) => {
-        return (
+      {/* Single dropdown container */}
+      <AnimatePresence>
+        {containerOpen && (
           <div
-            key={key}
-            className={`absolute bg-black z-50 rounded-xl transition-all duration-300 ${
-              activeMenu === key
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-4 pointer-events-none"
-            }`}
-            onMouseEnter={handleMenuMouseEnter}
-            onMouseLeave={handleMouseLeave}
+            className="absolute z-50"
             style={{
-              top: "calc(100% + 10px)",
+              top: "calc(100% + -10px)",
               left: "52%",
               transform: "translateX(-50%)",
               width: "800px",
-
               // Create an invisible hover margin
-              padding: "50px",
+              padding: "10px",
               paddingTop: "20px",
-              margin: "-50px",
+              margin: "-10px",
               marginTop: "0px",
+              pointerEvents: containerOpen ? "auto" : "none",
             }}
+            onMouseEnter={handleMenuMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
-            <div className="px-8 py-12">
-              <h2 className="text-xl font-semibold mb-6 text-white">
-                {content.title}
-              </h2>
-              <div className="grid grid-cols-3 gap-8">
-                {content.columns.map((column, i) => (
-                  <div key={i} className="col-span-1">
-                    <h3 className="text-lg font-medium mb-4 text-white">
-                      {column.heading}
-                    </h3>
-                    <ul className="space-y-3">
-                      {column.links.map((link, j) => (
-                        <li
-                          key={j}
-                          className="hover:text-gray-300 cursor-pointer text-white"
+            <motion.div
+              className="bg-black rounded-xl overflow-hidden"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+            >
+              {activeContent && (
+                <motion.div
+                  key={activeMenu}
+                  className="px-8 py-12"
+                  variants={contentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                >
+                  <motion.h2
+                    className="text-xl font-semibold mb-6 text-white"
+                    variants={itemVariants}
+                    custom={0.1} // Apply base delay for title
+                  >
+                    {activeContent.title}
+                  </motion.h2>
+                  <div className="grid grid-cols-3 gap-8">
+                    {activeContent.columns.map((column, colIndex) => (
+                      <motion.div
+                        key={colIndex}
+                        className="col-span-1"
+                        variants={contentVariants}
+                      >
+                        <motion.h3
+                          className="text-lg font-medium mb-4 text-white"
+                          variants={itemVariants}
+                          custom={getCustomDelay(colIndex)}
                         >
-                          {link}
-                        </li>
-                      ))}
-                    </ul>
+                          {column.heading}
+                        </motion.h3>
+                        <ul className="space-y-3">
+                          {column.links.map((link, linkIndex) => (
+                            <motion.li
+                              key={linkIndex}
+                              className="hover:text-gray-300 cursor-pointer text-white"
+                              variants={itemVariants}
+                              custom={getCustomDelay(colIndex)}
+                            >
+                              {link}
+                            </motion.li>
+                          ))}
+                        </ul>
+                      </motion.div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </div>
+                </motion.div>
+              )}
+            </motion.div>
           </div>
-        );
-      })}
+        )}
+      </AnimatePresence>
     </>
   );
 };
