@@ -6,9 +6,9 @@ import MobileNavbar from "./NavbarTypes/MobileNavbar";
 const Navbar = () => {
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
+    setIsMobile(window.innerWidth < 1280);
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 1280);
     };
     window.addEventListener("resize", handleResize);
     return () => {

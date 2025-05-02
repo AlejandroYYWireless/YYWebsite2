@@ -217,7 +217,7 @@ const DesktopNavbarLinks = ({
             {menuKey}{" "}
             <ChevronDown
               className={`transition-transform duration-300 ${
-                activeMenu === menuKey ? "rotate-180" : ""
+                activeMenu === menuKey ? "scale-y-[-1]" : ""
               }`}
               size={16}
             />
