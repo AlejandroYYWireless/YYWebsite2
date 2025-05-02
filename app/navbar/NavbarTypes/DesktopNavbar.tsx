@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import DesktopNavbarLinks from "../DesktopNavbarLinks";
+import Link from "next/link";
 
 const DesktopNavbar = () => {
   const [navState, setNavState] = useState<"visible" | "hidden">("visible");
@@ -57,13 +58,16 @@ const DesktopNavbar = () => {
       >
         {/* Rest of code up for grabs */}
         <div className="flex justify-between items-center text-sm px-8">
-          <Image
-            src={"/images/brands/SquareSpace.svg"}
-            alt="logo"
-            className="shrink-0 cursor-pointer"
-            width={208}
-            height={120}
-          />
+          <Link href={"/"} className="flex items-center gap-2 cursor-pointer">
+            <Image
+              src={"/images/internal/YYWirelessSmallDark.svg"}
+              alt="YYWireless Company Logo, an image of a circle with two Y's in it."
+              className="shrink-0 cursor-pointer"
+              width={65}
+              height={65}
+            />
+            <p className="text-3xl">YYWireless</p>
+          </Link>
 
           {/* Using the DesktopNavbarLinks component */}
           <DesktopNavbarLinks

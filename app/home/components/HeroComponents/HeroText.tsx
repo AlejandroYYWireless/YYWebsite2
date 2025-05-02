@@ -20,7 +20,7 @@ const HeroText = () => {
           transition={{ duration: 0.8, easy: "easeOut", delay: 0.2 }}
           className="text-white text-[5vw] text-base/25 max-w-4xl"
         >
-          The leader in website design
+          Repurpose. Reconnect.
         </motion.h1>
         <motion.button
           initial={{ opacity: 0, rotateX: 25, y: 25 }}

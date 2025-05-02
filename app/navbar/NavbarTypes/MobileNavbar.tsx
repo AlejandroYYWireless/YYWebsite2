@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import MobileNavCurtain from "../MobileNavbarComponents/MobileNavCurtain";
 import MobileNavToggle from "../MobileNavbarComponents/MobileNavToggle";
 import { useMobileNavStore } from "../MobileNavbarComponents/useMobileNavStore";
+import Link from "next/link";
 
 const MobileNavbar = () => {
   const [navState, setNavState] = useState("visible");
@@ -59,13 +60,16 @@ const MobileNavbar = () => {
         }`}
       >
         <div className="flex justify-between items-center mx-2">
-          <Image
-            src="/images/brands/SquareSpaceSmall.svg"
-            alt="Logo"
-            width={50}
-            height={50}
-            className="w-8 h-8 p-0.5"
-          />
+          <Link href={"/"}>
+            <Image
+              src={"/images/internal/YYWirelessSmallDark.svg"}
+              alt="YYWireless Company Logo, an image of a circle with two Y's in it."
+              className="shrink-0 cursor-pointer"
+              width={45}
+              height={45}
+            />
+          </Link>
+
           <div
             onMouseEnter={() => handleToggleHover(true)}
             onMouseLeave={() => handleToggleHover(false)}
