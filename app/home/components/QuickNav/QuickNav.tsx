@@ -1,5 +1,5 @@
 "use client";
-
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
@@ -107,6 +107,47 @@ const QuickNav: React.FC = () => {
   }, [isOpen]);
 
   useEffect(() => {
+    const showIndicator = (index: number): void => {
+      if (!tabRefs.current[index]) return;
+
+      const tab = tabRefs.current[index];
+      if (tab) {
+        // For desktop view
+        if (!isMobile) {
+          // For the first tab (leftmost), extend the indicator closer to the left edge
+          // For the last tab (rightmost), extend the indicator closer to the right edge
+          let adjustedLeft = tab.offsetLeft;
+          let adjustedWidth = tab.offsetWidth;
+
+          if (index === 0) {
+            // Extend leftmost tab indicator closer to the left edge (accounting for padding)
+            adjustedLeft = 6; // Add a small 6px buffer from the edge
+            adjustedWidth = tab.offsetLeft + tab.offsetWidth - 6;
+          } else if (index === tabs.length - 1) {
+            // Extend rightmost tab indicator closer to the right edge
+            const navWidth = navRef.current?.offsetWidth || 0;
+            adjustedWidth = navWidth - tab.offsetLeft - 6; // Add a small 6px buffer from the edge
+          }
+
+          setIndicatorStyle({
+            width: `${adjustedWidth}px`,
+            left: `${adjustedLeft}px`,
+            height: `${tab.offsetHeight}px`,
+            top: `${tab.offsetTop}px`,
+            opacity: 1,
+          });
+        } else {
+          // For mobile dropdown view
+          setIndicatorStyle({
+            width: `${tab.offsetWidth}px`,
+            left: `${tab.offsetLeft}px`,
+            height: `${tab.offsetHeight}px`,
+            top: `${tab.offsetTop}px`,
+            opacity: 1,
+          });
+        }
+      }
+    };
     // Update indicator when active/hover state changes
     if (hoverTab !== null && tabRefs.current[hoverTab]) {
       showIndicator(hoverTab);
@@ -126,49 +167,7 @@ const QuickNav: React.FC = () => {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [activeTab, hoverTab]);
-
-  const showIndicator = (index: number): void => {
-    if (!tabRefs.current[index]) return;
-
-    const tab = tabRefs.current[index];
-    if (tab) {
-      // For desktop view
-      if (!isMobile) {
-        // For the first tab (leftmost), extend the indicator closer to the left edge
-        // For the last tab (rightmost), extend the indicator closer to the right edge
-        let adjustedLeft = tab.offsetLeft;
-        let adjustedWidth = tab.offsetWidth;
-
-        if (index === 0) {
-          // Extend leftmost tab indicator closer to the left edge (accounting for padding)
-          adjustedLeft = 6; // Add a small 6px buffer from the edge
-          adjustedWidth = tab.offsetLeft + tab.offsetWidth - 6;
-        } else if (index === tabs.length - 1) {
-          // Extend rightmost tab indicator closer to the right edge
-          const navWidth = navRef.current?.offsetWidth || 0;
-          adjustedWidth = navWidth - tab.offsetLeft - 6; // Add a small 6px buffer from the edge
-        }
-
-        setIndicatorStyle({
-          width: `${adjustedWidth}px`,
-          left: `${adjustedLeft}px`,
-          height: `${tab.offsetHeight}px`,
-          top: `${tab.offsetTop}px`,
-          opacity: 1,
-        });
-      } else {
-        // For mobile dropdown view
-        setIndicatorStyle({
-          width: `${tab.offsetWidth}px`,
-          left: `${tab.offsetLeft}px`,
-          height: `${tab.offsetHeight}px`,
-          top: `${tab.offsetTop}px`,
-          opacity: 1,
-        });
-      }
-    }
-  };
+  }, [activeTab, hoverTab, isMobile, tabs.length]);
 
   const hideIndicator = (): void => {
     setIndicatorStyle((prev) => ({
@@ -273,42 +272,47 @@ const QuickNav: React.FC = () => {
       </div>
 
       {/* Dropdown Options for Mobile */}
-      {isMobile && isOpen && (
-        <div
-          ref={optionsRef}
-          className="absolute mt-2 rounded-[20px] bg-stone-950/45 backdrop-blur-xl p-1 z-50 left-0 right-0 mx-auto w-fit"
-          style={{
-            maxWidth: navRef.current?.offsetWidth || "auto",
-            width: navRef.current?.offsetWidth || "auto",
-          }}
-        >
-          {/* Background indicator for mobile options */}
-          <div
-            className="absolute bg-neutral-600/30 rounded-[60px] transition-all duration-300 ease-in-out z-0"
-            style={indicatorStyle}
-          />
+      <AnimatePresence>
+        {isMobile && isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            ref={optionsRef}
+            className="absolute mt-2 rounded-[20px] bg-stone-950/45 backdrop-blur-xl p-1 z-50 left-0 right-0 mx-auto w-fit"
+            style={{
+              maxWidth: navRef.current?.offsetWidth || "auto",
+              width: navRef.current?.offsetWidth || "auto",
+            }}
+          >
+            {/* Background indicator for mobile options */}
+            <div
+              className="absolute bg-neutral-600/30 rounded-[60px] transition-all duration-300 ease-in-out z-0"
+              style={indicatorStyle}
+            />
 
-          {/* Options */}
-          <div className="flex flex-col py-1">
-            {tabs.map((tab, index) => (
-              <div
-                key={index}
-                ref={(el) => {
-                  tabRefs.current[index] = el;
-                }}
-                className={`relative text-sm z-10 py-3 px-6 cursor-pointer text-white ${
-                  activeTab === index ? "font-medium" : ""
-                }`}
-                onMouseEnter={() => handleHover(index)}
-                onMouseLeave={handleHoverEnd}
-                onClick={() => handleClick(index)}
-              >
-                {tab}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+            {/* Options */}
+            <div className="flex flex-col py-1">
+              {tabs.map((tab, index) => (
+                <div
+                  key={index}
+                  ref={(el) => {
+                    tabRefs.current[index] = el;
+                  }}
+                  className={`relative text-sm z-10 py-3 px-6 cursor-pointer text-white ${
+                    activeTab === index ? "font-medium" : ""
+                  }`}
+                  onMouseEnter={() => handleHover(index)}
+                  onMouseLeave={handleHoverEnd}
+                  onClick={() => handleClick(index)}
+                >
+                  {tab}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };
